@@ -1,0 +1,21 @@
+#!name = Follow每日签到
+#!desc = Follow每日签到，需要进入此插件的主页链接，阅读使用说明操作。
+#!openUrl = https://follow.is
+#!author = Nebuluxe[https://lmyz.1yo.cc]
+#!tag = 签到
+#!system = 
+#!system_version = 
+#!loon_version = 3.2.1(749)
+
+#!homepage = https://raw.githubusercontent.com/LMuniverse/ApexApple_AE1/refs/heads/main/module/loon/follow/README.md
+#!icon = https://raw.githubusercontent.com/LMuniverse/ApexApple_AE1/refs/heads/main/module/loon/follow/FollowRSS.png
+#!date = 2024-10-17 22:58:30
+
+[Argument]
+token = input, "", tag = csrfToken, desc = 这里需要输入csrfToken的值
+cookie = input, "", tag = Cookie, desc = 这里需要输入Cookie的值
+cron = input, "0 1 * * *", tag = 定时参数, desc = 这里需要输入符合CRON表达式的参数
+
+[Script]
+# 定时签到
+cron {cron} script-path = https://raw.githubusercontent.com/LMuniverse/ApexApple_AE1/refs/heads/main/scripts/follow/FollowRSS_checkin.js, tag = Follow每日签到, timeout = 120, argument=[{token},{cookie}]
