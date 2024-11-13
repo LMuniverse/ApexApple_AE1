@@ -1,7 +1,7 @@
 /*************************************
 
 项目名称：彩云天气-净化/解锁SVIP
-下载地址：https://lmyz.noxox.cn
+下载地址：https://lmyz.1yo.cc
 更新日期：2024-09-28
 脚本作者：Nebuluxe
 电报频道：https://t.me/nebuluxe
