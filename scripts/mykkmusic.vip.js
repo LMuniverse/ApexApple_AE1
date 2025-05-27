@@ -4,7 +4,7 @@
  * @channel https://t.me/nebuluxe
  * @feedback https://t.me/lmyz_star
  * @version V2.0.46
- * @ScriptURL https://raw.githubusercontent.com/LMuniverse/ApexApple_AE1/refs/heads/main/scripts/mykkmusic.vip.js
+ * @ScriptURL https://github.com/LMuniverse/ApexApple_AE1/raw/main/scripts/mykkmusic.vip.js
 ******************************************
 脚本声明:
 1、本重写仅限本人使用，严禁传播或售卖
