@@ -1,0 +1,6 @@
+# JAVDB Websites Filter
+# Extracted from global.list - contains javdb related domains
+# Generated: 2025-11-26
+
+# JAVDB - Japanese Adult Video Database
+.javdb.com
