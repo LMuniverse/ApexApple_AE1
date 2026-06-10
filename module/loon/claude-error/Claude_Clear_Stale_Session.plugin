@@ -1,0 +1,9 @@
+#!name=Claude Clear Stale Session
+#!desc=V13-AutoTwoStep：一次启用，自动分两次命中清理 sessionKey 与 routingHint。出现登录页后立刻关闭插件。
+#!author=local
+
+[Script]
+http-request ^https:\/\/claude\.ai\/api\/account.* script-path=https://raw.githubusercontent.com/LMuniverse/ApexApple_AE1/refs/heads/main/scripts/claude_clear_stale_session.js?v=13, requires-body=false, timeout=10, tag=Claude Clear Stale Session V13 AutoTwoStep
+
+[MITM]
+hostname = %APPEND% claude.ai
