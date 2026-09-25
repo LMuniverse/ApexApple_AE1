@@ -21,123 +21,151 @@ global-client-fingerprint: chrome
 dns:
   enable: true
   listen: "127.0.0.1:5335"
+  ipv6: false
   use-system-hosts: false
   enhanced-mode: fake-ip
   fake-ip-range: 198.18.0.1/16
+
+  # 0. 引导 DNS：用于解析带域名的 DoH/DoT 服务器真实 IP（必须是纯 IP）
   default-nameserver:
-    - 180.76.76.76
-    - 182.254.118.118
-    - 8.8.8.8
-    - 180.184.2.2
-  nameserver:
-    - 180.76.76.76
-    - 119.29.29.29
-    - 180.184.1.1
     - 223.5.5.5
-    - 8.8.8.8
-    - "https://223.6.6.6/dns-query#h3=true"
-    - "https://dns.alidns.com/dns-query"
-    - "https://cloudflare-dns.com/dns-query"
-    - "https://doh.pub/dns-query"
-  fallback:
-    - "https://000000.dns.nextdns.io/dns-query#h3=true"
-    - "https://dns.alidns.com/dns-query"
-    - "https://doh.pub/dns-query"
-    - "https://public.dns.iij.jp/dns-query"
-    - "https://101.101.101.101/dns-query"
-    - "https://208.67.220.220/dns-query"
-    - "tls://8.8.4.4"
-    - "tls://1.0.0.1:853"
-    - "https://cloudflare-dns.com/dns-query"
-    - "https://dns.google/dns-query"
-  fallback-filter:
-    geoip: true
-    ipcidr:
-      - 240.0.0.0/4
-      - 0.0.0.0/32
-      - 127.0.0.1/32
-    domain:
-      - "+.google.com"
-      - "+.facebook.com"
-      - "+.twitter.com"
-      - "+.youtube.com"
-      - "+.xn--ngstr-lra8j.com"
-      - "+.google.cn"
-      - "+.googleapis.cn"
-      - "+.googleapis.com"
-      - "+.gvt1.com"
+    - 119.29.29.29
+    - 180.76.76.76
+
+  # 1. 节点域名专用 DNS：解析代理节点服务器域名，防止循环依赖导致断网（必须是国内纯 IP）
+  proxy-server-nameserver:
+    - 223.5.5.5
+    - 119.29.29.29
+
+  # 2. 直连专用 DNS：规则分流命中 DIRECT 时使用此处的国内高品质 DoH，保证 CDN 节点最优
+  direct-nameserver:
+    - https://doh.pub/dns-query
+    - https://dns.alidns.com/dns-query
+
+  # 存在 direct-nameserver 时，依然以 nameserver-policy 优先
+  direct-nameserver-follow-policy: true
+
+  # 3. 指定域名解析策略：明确指定国内、局域网、苹果服务使用阿里/腾讯 DoH；支持特定站点自定义 DoH
+  nameserver-policy:
+    "geosite:cn,private,apple":
+      - https://doh.pub/dns-query
+      - https://dns.alidns.com/dns-query
+
+  # 4. 默认主 DNS：代理流量与海外域名解析。加 #RULES 强制经由分流规则路由到节点代理，防污染且杜绝 DNS 泄露
+  nameserver:
+    - "https://1.1.1.1/dns-query#RULES"
+    - "https://8.8.8.8/dns-query#RULES"
+    - "https://dns.google/dns-query#RULES"
+
+  # 5. Fake-IP 白名单：必须返回真实 IP 的服务（NTP对时、局域网、STUN联机、国内流媒体CDN、连通性探测）
   fake-ip-filter:
-    - "*.lan"
-    - "stun.*.*.*"
-    - "stun.*.*"
-    - time.windows.com
-    - time.nist.gov
-    - time.apple.com
-    - time.asia.apple.com
-    - "*.ntp.org.cn"
-    - "*.openwrt.pool.ntp.org"
-    - time1.cloud.tencent.com
-    - time.ustc.edu.cn
-    - pool.ntp.org
-    - ntp.ubuntu.com
-    - ntp.aliyun.com
-    - ntp1.aliyun.com
-    - ntp2.aliyun.com
-    - ntp3.aliyun.com
-    - ntp4.aliyun.com
-    - ntp5.aliyun.com
-    - ntp6.aliyun.com
-    - ntp7.aliyun.com
-    - time1.aliyun.com
-    - time2.aliyun.com
-    - time3.aliyun.com
-    - time4.aliyun.com
-    - time5.aliyun.com
-    - time6.aliyun.com
-    - time7.aliyun.com
+    # === 基础本地与局域网络 ===
+    - "+.lan"
+    - "+.local"
+    - "+.arpa"
+    - "+.localhost"
+    - "localhost"
+
+    # === 系统网络连通性探测（避免误报未联网）===
+    - "+.msftconnecttest.com"
+    - "+.msftncsi.com"
+    - "captive.apple.com"
+
+    # === NTP 时间同步服务（必须真实 IP）===
+    - "time.*.com"
+    - "time.*.apple.com"
+    - "time.windows.com"
+    - "time.apple.com"
+    - "time.asia.apple.com"
     - "*.time.edu.cn"
-    - time1.apple.com
-    - time2.apple.com
-    - time3.apple.com
-    - time4.apple.com
-    - time5.apple.com
-    - time6.apple.com
-    - time7.apple.com
-    - time1.google.com
-    - time2.google.com
-    - time3.google.com
-    - time4.google.com
-    - music.163.com
-    - "*.music.163.com"
-    - "*.126.net"
-    - musicapi.taihe.com
-    - music.taihe.com
-    - songsearch.kugou.com
-    - trackercdn.kugou.com
-    - "*.kuwo.cn"
-    - api-jooxtt.sanook.com
-    - api.joox.com
-    - joox.com
-    - y.qq.com
-    - "*.y.qq.com"
-    - streamoc.music.tc.qq.com
-    - mobileoc.music.tc.qq.com
-    - isure.stream.qqmusic.qq.com
-    - dl.stream.qqmusic.qq.com
-    - aqqmusic.tc.qq.com
-    - amobile.music.tc.qq.com
-    - "*.xiami.com"
-    - "*.music.migu.cn"
-    - music.migu.cn
-    - "*.msftconnecttest.com"
-    - "*.msftncsi.com"
-    - localhost.ptlogin2.qq.com
-    - "*.*.*.srv.nintendo.net"
+    - "*.ntp.org.cn"
+    - "cn.ntp.org.cn"
+    - "*.openwrt.pool.ntp.org"
+    - "pool.ntp.org"
+    - "+.pool.ntp.org"
+    - "ntp.ubuntu.com"
+    - "ntp.aliyun.com"
+    - "ntp.ntsc.ac.cn"
+
+    # === STUN / WebRTC 与游戏联机（必须真实 IP 穿透）===
+    - "+.stun.*.*"
+    - "+.stun.*.*.*"
+    - "stun.l.google.com"
+    - "stun1.l.google.com"
     - "*.*.stun.playstation.net"
+    - "*.*.*.srv.nintendo.net"
     - "xbox.*.*.microsoft.com"
     - "*.ipv6.microsoft.com"
     - "*.*.xboxlive.com"
-    - speedtest.cros.wr.pvp.net
+    - "speedtest.cros.wr.pvp.net"
+
+    # === 腾讯生态与本地认证 ===
+    - "localhost.ptlogin2.qq.com"
+    - "localhost.sec.qq.com"
+    - "localhost.work.weixin.qq.com"
+    - "+.qq.com"
+    - "+.weixin.qq.com"
+    - "+.wechat.com"
+    - "+.tencent.com"
+
+    # === 小米生态 ===
+    - "+.xiaomi.com"
+    - "+.mi.com"
+    - "+.miui.com"
+    - "+.xiaomi.net"
+    - "+.mi.net"
+    - "+.miui.net"
+    - "market.xiaomi.com"
+
+    # === Apple 中国服务 ===
+    - "+.apple.com.cn"
+    - "+.icloud.com.cn"
+
+    # === 国内音视频与常用流媒体服务（避免 Fake-IP 造成 CDN 调度减速或防盗链异常）===
+    - "+.bilibili.com"
+    - "+.bilivideo.com"
+    - "+.hdslb.com"
+    - "+.163.com"
+    - "+.126.net"
+    - "+.netease.com"
+    - "+.kugou.com"
+    - "+.kuwo.cn"
+    - "+.migu.cn"
+    - "+.taihe.com"
+    - "+.joox.com"
+    - "+.sanook.com"
+    - "+.xiami.com"
+    - "+.iqiyi.com"
+    - "+.youku.com"
+    - "+.mgtv.com"
+    - "+.douyin.com"
+    - "+.toutiao.com"
+    - "+.bytedance.com"
+    - "+.kuaishou.com"
+
+    # === 国内主流互联网生态（直连低延迟）===
+    - "+.baidu.com"
+    - "+.bdstatic.com"
+    - "+.taobao.com"
+    - "+.tmall.com"
+    - "+.alipay.com"
+    - "+.aliyun.com"
+    - "+.alibaba.com"
+    - "+.jd.com"
+    - "+.360.cn"
+    - "+.qihu.com"
+    - "+.weibo.com"
+    - "+.sinaimg.cn"
+
+    # === 国内公共 DoH / DNS（防止 DNS 循环依赖）===
+    - "doh.pub"
+    - "dns.alidns.com"
+    - "dot.pub"
+    - "223.5.5.5"
+    - "119.29.29.29"
+
+    # === 其他 ===
+    - "+.pcbeta.com"
 
 # =========================
 # 配置文件管理
