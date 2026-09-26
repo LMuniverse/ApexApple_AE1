@@ -381,6 +381,8 @@ DOMAIN, api-gateway.merge.dev
 # Meta
 DOMAIN, imagine.meta.com
 DOMAIN-SUFFIX, meta.ai
+DOMAIN, auth.muse.ai
+DOMAIN-SUFFIX, muse.ai
 
 # MiniMax国际
 DOMAIN-SUFFIX, minimax.io
@@ -591,6 +593,4 @@ DOMAIN, api.zeldoc.ai
 DOMAIN, ai.zenifra.com
 
 # ZenMux
-DOMAIN, zenmux.ai
-# Custom Addition: Muse AI
-DOMAIN-SUFFIX, muse.ai
+DOMAIN,zenmux.ai
