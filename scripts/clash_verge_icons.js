@@ -1,29 +1,48 @@
 // Clash Verge Rev 策略组图标与增强脚本
-// 自动为策略组注入 MyClash 高清 SVG 图标
+// 自动为策略组注入高清 SVG / PNG 图标
 
-const iconBase = 'https://fastly.jsdelivr.net/gh/AIsouler/MyClash@main/Icons/svg/';
+const iconSvgBase = 'https://fastly.jsdelivr.net/gh/AIsouler/MyClash@main/Icons/svg/';
+const iconRepoBase = 'https://raw.githubusercontent.com/LMuniverse/ApexApple_AE1/main/icons/';
 
 const iconMapping = {
-  '🚩 节点选择': iconBase + 'Proxy.svg',
-  '♻️ 自动选择': iconBase + 'Auto.svg',
-  '👋 手动切换': iconBase + 'Static.svg',
-  '🖥️ 远程服务': iconBase + 'Server.svg',
-  '💬 AI&谷歌': iconBase + 'OpenAI.svg',
-  'Telegram': iconBase + 'Telegram.svg',
-  'YouTube': iconBase + 'YouTube.svg',
-  'X': iconBase + 'Twitter.svg',
-  'Facebook': iconBase + 'Meta.svg',
-  'TikTok': iconBase + 'TikTok.svg',
-  'Spotify': iconBase + 'Spotify.svg',
-  'Ⓜ️ 微软服务': iconBase + 'Microsoft.svg',
-  '国外流媒体': iconBase + 'Netflix.svg',
-  '🛑 广告拦截': iconBase + 'AdBlock.svg',
-  '🇭🇰 香港节点 🕹': iconBase + 'HongKong.svg',
-  '🇹🇼 台湾节点 🕹': iconBase + 'Taiwan.svg',
-  '🇯🇵 日本节点 🕹': iconBase + 'Japan.svg',
-  '🇸🇬 新加坡节点 🕹': iconBase + 'Singapore.svg',
-  '🇺🇸 美国节点 🕹': iconBase + 'America.svg',
-  '🌏 全球节点 🕹': iconBase + 'WorldMap.svg'
+  // 核心功能策略组 (SVG)
+  '🚩 节点选择': iconSvgBase + 'Proxy.svg',
+  '♻️ 自动选择': iconSvgBase + 'Auto.svg',
+  '👋 手动切换': iconSvgBase + 'Static.svg',
+  '🖥️ 远程服务': iconSvgBase + 'Server.svg',
+  '🛑 广告拦截': iconSvgBase + 'AdBlock.svg',
+
+  // 国外应用与流媒体
+  '💬 AI&谷歌': iconSvgBase + 'OpenAI.svg',
+  'YouTube': iconSvgBase + 'YouTube.svg',
+  'Telegram': iconSvgBase + 'Telegram.svg',
+  'Spotify': iconSvgBase + 'Spotify.svg',
+  'Ⓜ️ 微软服务': iconSvgBase + 'Microsoft.svg',
+  '国外流媒体': iconSvgBase + 'Netflix.svg',
+  'TikTok': iconSvgBase + 'TikTok.svg',
+
+  // 用户专属定制图标 (PNG)
+  'X': iconRepoBase + 'X.png',
+  'Facebook': iconRepoBase + 'Facebook.png',
+  'Instagram': iconRepoBase + 'Instagram.png',
+  'javdb': iconRepoBase + 'JavDB.png',
+
+  // 国内主流媒体 (PNG)
+  '抖音': iconRepoBase + 'Douyin.png',
+  '小红书': iconRepoBase + 'Xiaohongshu.png',
+  '微博': iconRepoBase + 'Weibo.png',
+  '快手': iconRepoBase + 'Kuaishou.png',
+  '哔哩哔哩': iconRepoBase + 'Bilibili.png',
+  '知乎': iconRepoBase + 'Zhihu.png',
+
+  // 地区策略组
+  '🇭🇰 香港节点 🕹': iconSvgBase + 'HongKong.svg',
+  '🇹🇼 台湾节点 🕹': iconSvgBase + 'Taiwan.svg',
+  '🇯🇵 日本节点 🕹': iconSvgBase + 'Japan.svg',
+  '🇸🇬 新加坡节点 🕹': iconSvgBase + 'Singapore.svg',
+  '🇺🇸 美国节点 🕹': iconSvgBase + 'America.svg',
+  '🇰🇷 韩国节点 🕹': iconRepoBase + 'Korea.png',
+  '🌏 全球节点 🕹': iconSvgBase + 'WorldMap.svg'
 };
 
 function main(config, profileName) {
