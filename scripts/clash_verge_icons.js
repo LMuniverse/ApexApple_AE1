@@ -2,7 +2,7 @@
 // 自动为策略组注入高清 SVG / PNG 图标
 
 const iconSvgBase = 'https://fastly.jsdelivr.net/gh/AIsouler/MyClash@main/Icons/svg/';
-const iconRepoBase = 'https://raw.githubusercontent.com/LMuniverse/ApexApple_AE1/main/icons/';
+const iconRepoBase = 'https://gh-proxy.com/https://raw.githubusercontent.com/LMuniverse/ApexApple_AE1/main/icons/';
 
 const iconMapping = {
   // 核心功能策略组 (SVG)
