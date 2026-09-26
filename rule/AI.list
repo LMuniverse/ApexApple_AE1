@@ -592,3 +592,5 @@ DOMAIN,ai.zenifra.com
 
 # ZenMux
 DOMAIN,zenmux.ai
+# Custom Addition: Muse AI
+DOMAIN-SUFFIX,muse.ai
