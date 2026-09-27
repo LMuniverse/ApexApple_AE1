@@ -10,6 +10,7 @@ const iconMapping = {
   '♻️ 自动选择': iconSvgBase + 'Auto.svg',
   '👋 手动切换': iconSvgBase + 'Static.svg',
   '🖥️ 远程服务': iconSvgBase + 'Server.svg',
+  '👨‍💻 开发者': iconRepoBase + 'Developer.svg',
   '🛑 广告拦截': iconSvgBase + 'AdBlock.svg',
 
   // 国外应用与流媒体

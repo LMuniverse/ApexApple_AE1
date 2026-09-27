@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="100%" height="100%">
+  <defs>
+    <!-- Background Card Gradient -->
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1E2330" />
+      <stop offset="100%" stop-color="#121620" />
+    </linearGradient>
+
+    <!-- Border Gradient -->
+    <linearGradient id="borderGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3D4A66" />
+      <stop offset="100%" stop-color="#202738" />
+    </linearGradient>
+
+    <!-- Syntax Code Gradients -->
+    <linearGradient id="bracketLeft" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00F2FE" />
+      <stop offset="100%" stop-color="#4FACFE" />
+    </linearGradient>
+
+    <linearGradient id="slashGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FF9A44" />
+      <stop offset="100%" stop-color="#FC6076" />
+    </linearGradient>
+
+    <linearGradient id="bracketRight" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38EF7D" />
+      <stop offset="100%" stop-color="#11998E" />
+    </linearGradient>
+
+    <!-- Drop Shadow -->
+    <filter id="cardShadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="20" stdDeviation="24" flood-color="#000000" flood-opacity="0.5" />
+    </filter>
+  </defs>
+
+  <!-- Squircle / Window Body -->
+  <rect x="96" y="96" width="832" height="832" rx="190" fill="url(#bgGrad)" stroke="url(#borderGrad)" stroke-width="14" filter="url(#cardShadow)" />
+
+  <!-- Top Titlebar Line -->
+  <line x1="96" y1="280" x2="928" y2="280" stroke="#242C3D" stroke-width="8" />
+
+  <!-- Traffic Lights (Window Buttons) -->
+  <circle cx="216" cy="192" r="24" fill="#FF5F56" />
+  <circle cx="288" cy="192" r="24" fill="#FFBD2E" />
+  <circle cx="360" cy="192" r="24" fill="#27C93F" />
+
+  <!-- Editor Mini Tab Bar -->
+  <rect x="448" y="176" width="140" height="32" rx="16" fill="#252E40" />
+
+  <!-- Code Symbols: < / > -->
+  <!-- Left Bracket < -->
+  <path d="M 370 410 L 225 545 L 370 680" fill="none" stroke="url(#bracketLeft)" stroke-width="64" stroke-linecap="round" stroke-linejoin="round" />
+
+  <!-- Center Slash / -->
+  <path d="M 570 380 L 454 710" fill="none" stroke="url(#slashGrad)" stroke-width="56" stroke-linecap="round" />
+
+  <!-- Right Bracket > -->
+  <path d="M 654 410 L 799 545 L 654 680" fill="none" stroke="url(#bracketRight)" stroke-width="64" stroke-linecap="round" stroke-linejoin="round" />
+
+  <!-- Bottom Console Status Badges -->
+  <rect x="225" y="795" width="110" height="26" rx="13" fill="#4FACFE" opacity="0.85" />
+  <rect x="360" y="795" width="220" height="26" rx="13" fill="#293347" />
+  <rect x="605" y="795" width="85" height="26" rx="13" fill="#293347" />
+</svg>
