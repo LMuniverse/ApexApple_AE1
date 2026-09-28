@@ -25,7 +25,7 @@
 | 客户端平台 | 推荐配置文件 / 订阅配置 | 架构特点 |
 | :--- | :--- | :--- |
 | **Loon (iOS / macOS)** | [`config/loon/loon_clash.conf`](./config/loon/loon_clash.conf) | 原生支持 DoH、自动优选策略组、全套精美矢量图标、权威上游规则库 |
-| **Shadowrocket (小火箭)** | [`config/shadowrocket/shadowrocket.conf`](./config/shadowrocket/shadowrocket.conf) | 1:1 移植 Loon 架构，原生 DOMAIN-SET 高效检索、`hijack-dns = *:53` 彻底封堵泄露 |
+| **Shadowrocket (小火箭)** | [`config/shadowrocket/shadowrocket.conf`](./config/shadowrocket/shadowrocket.conf) | 1:1 移植 Loon 架构，原生 DOMAIN-SET 高效检索、全加密双轨 DoH 零回落泄露 |
 | **Clash / Mihomo** | [`config/paraspace_clash.ini`](./config/paraspace_clash.ini) + [`clash_rule_base.yaml`](./config/clash_rule_base.yaml) | Subconverter 订阅转换基础模板，内置全功能 Fake-IP 白名单与规则分流 |
 
 ---
