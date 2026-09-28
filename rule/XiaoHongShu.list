@@ -1,0 +1,25 @@
+# XiaoHongShu / RedNote 全量分流规则列表
+# 包含小红书国内服务、海外 RedNote (Web/App)、以及全量静态与 CDN 加速域名
+# 适用于 Clash、Loon、Shadowrocket 等主流客户端
+
+# === 小红书国内主站与移动端 ===
+DOMAIN-SUFFIX,xiaohongshu.com
+DOMAIN-SUFFIX,xiaohongshu.net
+DOMAIN-SUFFIX,xiaohongshu-mycdn.com
+DOMAIN-SUFFIX,xhscdn.com
+DOMAIN-SUFFIX,xhscdn.net
+DOMAIN-SUFFIX,xhslink.com
+DOMAIN-SUFFIX,xhsrcdn.com
+
+# === RedNote (小红书新版 Web 网页端与海外版服务) ===
+DOMAIN-SUFFIX,rednote.com
+DOMAIN-SUFFIX,rednote.com.my
+DOMAIN-SUFFIX,rednotecdn.com
+DOMAIN-SUFFIX,rednote.life
+DOMAIN-SUFFIX,rnote.com
+DOMAIN-SUFFIX,redelight.cn
+
+# === 业务支持与风控服务 ===
+DOMAIN-SUFFIX,askdiandian.com
+DOMAIN-SUFFIX,diandianlife.top
+DOMAIN-SUFFIX,fengkongcloud.com
