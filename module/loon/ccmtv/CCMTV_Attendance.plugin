@@ -1,0 +1,28 @@
+#!name = CCMTV 考勤助手 (第一阶段)
+#!desc = 固化考勤打卡坐标与地址为【南部战区总医院越秀院区】。采用前端DOM注入与提交接口兜底重写的“双保险”架构，彻底解除异地打卡与定位失败拦截；同时顺风车捕获有效会话凭据，为第二阶段全自动Cron打卡铺路。
+#!openUrl = 
+#!author = Nebuluxe[https://lmyz.1yo.cc]
+#!tag = 考勤, 签到
+#!system = 
+#!system_version = 
+#!loon_version = 3.2.1(749)
+#!homepage = https://raw.githubusercontent.com/LMuniverse/ApexApple_AE1/refs/heads/main/module/loon/ccmtv/README.md
+#!icon = https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Hospital.png
+#!date = 2026-11-10 16:30:00
+
+[Argument]
+LNG = input, "113.25680", tag = 经度 (GCJ-02), desc = 目标签到位置高德经度
+LAT = input, "23.14200", tag = 纬度 (GCJ-02), desc = 目标签到位置高德纬度
+ADDRESS = input, "广东省广州市越秀区流花街道人民北路辅路中国人民解放军南部战区总医院(越秀院区)", tag = 签到地址, desc = 目标签到位置标准文本
+CaptureCookie = switch, true, false, tag = 自动捕获凭据, desc = 开启后自动记录最新Cookie与设备参数，为第二阶段定时自动签到做准备
+EnableNotify = switch, true, false, tag = 系统通知, desc = 打卡拦截篡改或凭据捕获成功时发送系统通知
+
+[Script]
+# 1. 前端页面注入：拦截考勤页面 user_index，在 HTML 中注入位置常量补丁，彻底粉碎“定位失败”门禁，视觉直观呈现医院地址
+http-response ^https:\/\/yun\.ccmtv\.cn\/admin\.php\/nbzq\/Sign_in_clock_home\/user_index script-path = https://raw.githubusercontent.com/LMuniverse/ApexApple_AE1/refs/heads/main/scripts/ccmtv/ccmtv_attendance.js, requires-body = true, timeout = 10, tag = CCMTV考勤前端页面注入, argument = [{LNG},{LAT},{ADDRESS},{CaptureCookie},{EnableNotify}]
+
+# 2. 提交接口兜底与凭据捕获：拦截考勤提交请求，强行改写 body 中的经纬度和地址为标准常量，并自动持久化 Cookie
+http-request ^https:\/\/yun\.ccmtv\.cn\/admin\.php\/nbzq\/Sign_in_clock_home\/(userMySignPost|userMySignPostFace|immediatelySignPost) script-path = https://raw.githubusercontent.com/LMuniverse/ApexApple_AE1/refs/heads/main/scripts/ccmtv/ccmtv_attendance.js, requires-body = true, timeout = 10, tag = CCMTV考勤提交兜底拦截, argument = [{LNG},{LAT},{ADDRESS},{CaptureCookie},{EnableNotify}]
+
+[MitM]
+hostname = yun.ccmtv.cn
