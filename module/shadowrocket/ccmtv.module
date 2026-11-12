@@ -1,17 +1,35 @@
-#!name = CCMTV 考勤助手 (Shadowrocket)
-#!desc = 固化考勤打卡坐标与地址为【南部战区总医院越秀院区】。采用前端DOM注入与提交接口兜底重写的“双保险”架构，彻底解除异地打卡与定位失败拦截；同时顺风车捕获有效会话凭据。
+#!name = CCMTV 考勤助手 (第一/二阶段全能版)
+#!desc = 固化考勤打卡坐标与地址为南部战区总医院(越秀院区)。第一阶段支持前端DOM注入与提交接口兜底重写；第二阶段支持由Cron定时器在早/中/晚考勤窗口期后台自动代打卡，内置四道前置防火墙、自主会话自愈与15分钟压哨生命线。
 #!author = Nebuluxe[https://lmyz.1yo.cc]
 #!homepage = https://raw.githubusercontent.com/LMuniverse/ApexApple_AE1/refs/heads/main/module/shadowrocket/README.md
 #!icon = https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Hospital.png
 #!category = 考勤
-#!date = 2026-11-10 17:00:00
+#!date = 2026-11-13 04:00:00
 
 [MITM]
 hostname = %APPEND% yun.ccmtv.cn
 
 [Script]
-# 1. 前端页面注入：拦截考勤页面 user_index，在 HTML 中注入位置常量补丁，彻底粉碎“定位失败”门禁，视觉直观呈现医院地址
-ccmtv-inject = type=http-response,pattern=^https?:\/\/yun\.ccmtv\.cn\/admin\.php\/nbzq\/Sign_in_clock_home\/user_index,requires-body=1,max-size=0,timeout=15,script-path=https://raw.githubusercontent.com/LMuniverse/ApexApple_AE1/refs/heads/main/scripts/ccmtv/ccmtv_attendance.js,argument=LNG=113.25680&LAT=23.14200&ADDRESS=广东省广州市越秀区流花街道人民北路辅路中国人民解放军南部战区总医院(越秀院区)&CaptureCookie=true&EnableNotify=true
+# 1. 前端页面注入：拦截考勤页面 user_index，在 HTML 中注入位置常量补丁，彻底粉碎“定位失败”门禁
+ccmtv-inject = type=http-response,pattern=^https?:\/\/yun\.ccmtv\.cn\/admin\.php\/nbzq\/Sign_in_clock_home\/user_index,requires-body=1,max-size=0,timeout=15,script-path=https://raw.githubusercontent.com/LMuniverse/ApexApple_AE1/refs/heads/main/scripts/ccmtv/ccmtv_attendance.js,argument=LNG=113.25680&LAT=23.14200&ADDRESS=广东省广州市越秀区流花街道人民北路辅路中国人民解放军南部战区总医院(越秀院区)&CaptureCookie=true&EnableNotify=true&RandomDelay=300
 
 # 2. 提交接口兜底与凭据捕获：拦截考勤提交请求，强行改写 body 中的经纬度和地址为标准常量，并自动持久化 Cookie
-ccmtv-submit = type=http-request,pattern=^https?:\/\/yun\.ccmtv\.cn\/admin\.php\/nbzq\/Sign_in_clock_home\/(userMySignPost|userMySignPostFace|immediatelySignPost),requires-body=1,max-size=0,timeout=15,script-path=https://raw.githubusercontent.com/LMuniverse/ApexApple_AE1/refs/heads/main/scripts/ccmtv/ccmtv_attendance.js,argument=LNG=113.25680&LAT=23.14200&ADDRESS=广东省广州市越秀区流花街道人民北路辅路中国人民解放军南部战区总医院(越秀院区)&CaptureCookie=true&EnableNotify=true
+ccmtv-submit = type=http-request,pattern=^https?:\/\/yun\.ccmtv\.cn\/admin\.php\/nbzq\/Sign_in_clock_home\/,requires-body=1,max-size=0,timeout=15,script-path=https://raw.githubusercontent.com/LMuniverse/ApexApple_AE1/refs/heads/main/scripts/ccmtv/ccmtv_attendance.js,argument=LNG=113.25680&LAT=23.14200&ADDRESS=广东省广州市越秀区流花街道人民北路辅路中国人民解放军南部战区总医院(越秀院区)&CaptureCookie=true&EnableNotify=true&RandomDelay=300
+
+# 3. [Phase 2] 早班全自动后台代打卡 (周一至周五 07:20 + 0~300s随机抖动)
+ccmtv-cron-morning = type=cron,cronexp=20 7 * * 1-5,timeout=360,script-path=https://raw.githubusercontent.com/LMuniverse/ApexApple_AE1/refs/heads/main/scripts/ccmtv/ccmtv_attendance.js,argument=LNG=113.25680&LAT=23.14200&ADDRESS=广东省广州市越秀区流花街道人民北路辅路中国人民解放军南部战区总医院(越秀院区)&CaptureCookie=true&EnableNotify=true&RandomDelay=300,wake-system=1
+
+# 4. [Phase 2] 中班全自动后台代打卡 (周一至周五 12:10 + 0~300s随机抖动)
+ccmtv-cron-noon = type=cron,cronexp=10 12 * * 1-5,timeout=360,script-path=https://raw.githubusercontent.com/LMuniverse/ApexApple_AE1/refs/heads/main/scripts/ccmtv/ccmtv_attendance.js,argument=LNG=113.25680&LAT=23.14200&ADDRESS=广东省广州市越秀区流花街道人民北路辅路中国人民解放军南部战区总医院(越秀院区)&CaptureCookie=true&EnableNotify=true&RandomDelay=300,wake-system=1
+
+# 5. [Phase 2] 晚班全自动后台代打卡 (周一至周五 17:38 + 0~300s随机抖动)
+ccmtv-cron-evening = type=cron,cronexp=38 17 * * 1-5,timeout=360,script-path=https://raw.githubusercontent.com/LMuniverse/ApexApple_AE1/refs/heads/main/scripts/ccmtv/ccmtv_attendance.js,argument=LNG=113.25680&LAT=23.14200&ADDRESS=广东省广州市越秀区流花街道人民北路辅路中国人民解放军南部战区总医院(越秀院区)&CaptureCookie=true&EnableNotify=true&RandomDelay=300,wake-system=1
+
+# 6. [Phase 2.5] 早班15分钟压哨生命线巡检 (距08:00关窗剩15分钟)
+ccmtv-cron-morning-rescue = type=cron,cronexp=45 7 * * 1-5,timeout=360,script-path=https://raw.githubusercontent.com/LMuniverse/ApexApple_AE1/refs/heads/main/scripts/ccmtv/ccmtv_attendance.js,argument=LNG=113.25680&LAT=23.14200&ADDRESS=广东省广州市越秀区流花街道人民北路辅路中国人民解放军南部战区总医院(越秀院区)&CaptureCookie=true&EnableNotify=true&RandomDelay=300,wake-system=1
+
+# 7. [Phase 2.5] 中班15分钟压哨生命线巡检 (距14:30关窗剩15分钟)
+ccmtv-cron-noon-rescue = type=cron,cronexp=15 14 * * 1-5,timeout=360,script-path=https://raw.githubusercontent.com/LMuniverse/ApexApple_AE1/refs/heads/main/scripts/ccmtv/ccmtv_attendance.js,argument=LNG=113.25680&LAT=23.14200&ADDRESS=广东省广州市越秀区流花街道人民北路辅路中国人民解放军南部战区总医院(越秀院区)&CaptureCookie=true&EnableNotify=true&RandomDelay=300,wake-system=1
+
+# 8. [Phase 2.5] 晚班15分钟压哨生命线巡检 (距23:00关窗剩15分钟)
+ccmtv-cron-evening-rescue = type=cron,cronexp=45 22 * * 1-5,timeout=360,script-path=https://raw.githubusercontent.com/LMuniverse/ApexApple_AE1/refs/heads/main/scripts/ccmtv/ccmtv_attendance.js,argument=LNG=113.25680&LAT=23.14200&ADDRESS=广东省广州市越秀区流花街道人民北路辅路中国人民解放军南部战区总医院(越秀院区)&CaptureCookie=true&EnableNotify=true&RandomDelay=300,wake-system=1

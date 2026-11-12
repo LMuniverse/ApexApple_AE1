@@ -1,28 +1,61 @@
-#!name = CCMTV 考勤助手 (第一阶段)
-#!desc = 固化考勤打卡坐标与地址为【南部战区总医院越秀院区】。采用前端DOM注入与提交接口兜底重写的“双保险”架构，彻底解除异地打卡与定位失败拦截；同时顺风车捕获有效会话凭据，为第二阶段全自动Cron打卡铺路。
+#!name = CCMTV 考勤助手 (第一/二阶段全能版)
+#!desc = 【第一阶段】固化打卡坐标与地址为南部战区总医院越秀院区，前端DOM注入与提交接口兜底重写双保险；【第二阶段】由Cron调度器在早/中/晚考勤窗口期后台自动代打卡，并带有四道前置防重打、防空打、智能防风控随机延时、凭据自愈与通知推送机制。
 #!openUrl = 
 #!author = Nebuluxe[https://lmyz.1yo.cc]
-#!tag = 考勤, 签到
+#!tag = 考勤, 签到, 自动化
 #!system = 
 #!system_version = 
 #!loon_version = 3.2.1(749)
 #!homepage = https://raw.githubusercontent.com/LMuniverse/ApexApple_AE1/refs/heads/main/module/loon/ccmtv/README.md
 #!icon = https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Hospital.png
-#!date = 2026-11-10 16:30:00
+#!date = 2026-11-11 02:20:00
 
 [Argument]
-LNG = input, "113.25680", tag = 经度 (GCJ-02), desc = 目标签到位置高德经度
-LAT = input, "23.14200", tag = 纬度 (GCJ-02), desc = 目标签到位置高德纬度
-ADDRESS = input, "广东省广州市越秀区流花街道人民北路辅路中国人民解放军南部战区总医院(越秀院区)", tag = 签到地址, desc = 目标签到位置标准文本
-CaptureCookie = switch, true, false, tag = 自动捕获凭据, desc = 开启后自动记录最新Cookie与设备参数，为第二阶段定时自动签到做准备
-EnableNotify = switch, true, false, tag = 系统通知, desc = 打卡拦截篡改或凭据捕获成功时发送系统通知
+# === 目标位置常量 ===
+LNG = input, "113.25680", tag = 经度 (GCJ-02), desc = 目标签到高德经度(已锁定南部战区总医院越秀院区)
+LAT = input, "23.14200", tag = 纬度 (GCJ-02), desc = 目标签到高德纬度(已锁定南部战区总医院越秀院区)
+ADDRESS = input, "广东省广州市越秀区流花街道人民北路辅路中国人民解放军南部战区总医院(越秀院区)", tag = 签到地址, desc = 目标签到标准文本
+
+# === 全自动 Cron 调度开关与智能随机防风控 ===
+AutoCheckin = switch, true, false, tag = 开启全自动签到, desc = 是否在考勤时间窗口由后台Cron自动打卡(建议开启)
+RandomDelay = input, "300", tag = 随机防风控延时上限(秒), desc = 唤醒并校验通过后在0~此秒数之间随机等待再打卡(默认300秒即5分钟，设为0则不延时)
+CRON_MORNING = input, "20 7 * * 1-5", tag = 早上上班Cron, desc = 周一至周五07:20触发(加随机延时后在07:20~07:25打卡，窗口07:00~08:00)
+CRON_NOON = input, "10 12 * * 1-5", tag = 下午上班Cron, desc = 周一至周五12:10触发(加随机延时后在12:10~12:15打卡，窗口12:00~14:30)
+CRON_EVENING = input, "38 17 * * 1-5", tag = 下午下班Cron, desc = 周一至周五17:38触发(加随机延时后在17:38~17:43打卡，窗口17:30~23:00)
+
+# === [Phase 2.5] 提前15分钟压哨生命线 Cron (已签到静默休眠，未签到立即极速抢救，死局紧急呼叫人工) ===
+CRON_MORNING_RESCUE = input, "45 7 * * 1-5", tag = 早班15分钟生命线Cron, desc = 07:45触发(距08:00关窗剩15分钟)
+CRON_NOON_RESCUE = input, "15 14 * * 1-5", tag = 中班15分钟生命线Cron, desc = 14:15触发(距14:30关窗剩15分钟)
+CRON_EVENING_RESCUE = input, "45 22 * * 1-5", tag = 晚班15分钟生命线Cron, desc = 22:45触发(距23:00关窗剩15分钟)
+
+# === 凭据与通知策略 ===
+CaptureCookie = switch, true, false, tag = 凭据自愈更新, desc = 打开考勤页时自动捕获并持久化最新Cookie与设备参数
+EnableNotify = switch, true, false, tag = 系统通知推送, desc = 打卡成功或异常时是否发送iOS系统横幅通知
 
 [Script]
-# 1. 前端页面注入：拦截考勤页面 user_index，在 HTML 中注入位置常量补丁，彻底粉碎“定位失败”门禁，视觉直观呈现医院地址
-http-response ^https:\/\/yun\.ccmtv\.cn\/admin\.php\/nbzq\/Sign_in_clock_home\/user_index script-path = https://raw.githubusercontent.com/LMuniverse/ApexApple_AE1/refs/heads/main/scripts/ccmtv/ccmtv_attendance.js, requires-body = true, timeout = 10, tag = CCMTV考勤前端页面注入, argument = [{LNG},{LAT},{ADDRESS},{CaptureCookie},{EnableNotify}]
+# 1. 考勤前端页面注入：拦截考勤页面 user_index，在 HTML 中注入位置补丁，粉碎“定位失败”门禁
+http-response ^https:\/\/yun\.ccmtv\.cn\/admin\.php\/nbzq\/Sign_in_clock_home\/user_index script-path = https://raw.githubusercontent.com/LMuniverse/ApexApple_AE1/refs/heads/main/scripts/ccmtv/ccmtv_attendance.js, requires-body = true, timeout = 10, tag = CCMTV考勤前端页面注入, argument = [{LNG},{LAT},{ADDRESS},{CaptureCookie},{EnableNotify},{RandomDelay}]
 
-# 2. 提交接口兜底与凭据捕获：拦截考勤提交请求，强行改写 body 中的经纬度和地址为标准常量，并自动持久化 Cookie
-http-request ^https:\/\/yun\.ccmtv\.cn\/admin\.php\/nbzq\/Sign_in_clock_home\/(userMySignPost|userMySignPostFace|immediatelySignPost) script-path = https://raw.githubusercontent.com/LMuniverse/ApexApple_AE1/refs/heads/main/scripts/ccmtv/ccmtv_attendance.js, requires-body = true, timeout = 10, tag = CCMTV考勤提交兜底拦截, argument = [{LNG},{LAT},{ADDRESS},{CaptureCookie},{EnableNotify}]
+# 2. 提交接口兜底拦截：手动点击打卡时强行改写 body 中的经纬度和地址为标准常量，并自动自愈更新 Cookie
+http-request ^https:\/\/yun\.ccmtv\.cn\/admin\.php\/nbzq\/Sign_in_clock_home\/ script-path = https://raw.githubusercontent.com/LMuniverse/ApexApple_AE1/refs/heads/main/scripts/ccmtv/ccmtv_attendance.js, requires-body = true, timeout = 10, tag = CCMTV考勤提交兜底拦截, argument = [{LNG},{LAT},{ADDRESS},{CaptureCookie},{EnableNotify},{RandomDelay}]
+
+# 3. [Phase 2] 早班全自动后台代打卡 (默认周一至周五 07:20 + 0~300s随机抖动)
+cron {CRON_MORNING} script-path = https://raw.githubusercontent.com/LMuniverse/ApexApple_AE1/refs/heads/main/scripts/ccmtv/ccmtv_attendance.js, timeout = 360, tag = CCMTV全自动打卡(早班), enable = {AutoCheckin}, argument = [{LNG},{LAT},{ADDRESS},{CaptureCookie},{EnableNotify},{RandomDelay}]
+
+# 4. [Phase 2] 中班全自动后台代打卡 (默认周一至周五 12:10 + 0~300s随机抖动)
+cron {CRON_NOON} script-path = https://raw.githubusercontent.com/LMuniverse/ApexApple_AE1/refs/heads/main/scripts/ccmtv/ccmtv_attendance.js, timeout = 360, tag = CCMTV全自动打卡(中班), enable = {AutoCheckin}, argument = [{LNG},{LAT},{ADDRESS},{CaptureCookie},{EnableNotify},{RandomDelay}]
+
+# 5. [Phase 2] 晚班全自动后台代打卡 (默认周一至周五 17:38 + 0~300s随机抖动)
+cron {CRON_EVENING} script-path = https://raw.githubusercontent.com/LMuniverse/ApexApple_AE1/refs/heads/main/scripts/ccmtv/ccmtv_attendance.js, timeout = 360, tag = CCMTV全自动打卡(晚班), enable = {AutoCheckin}, argument = [{LNG},{LAT},{ADDRESS},{CaptureCookie},{EnableNotify},{RandomDelay}]
+
+# 6. [Phase 2.5] 早班15分钟压哨生命线巡检 (距08:00关窗剩15分钟)
+cron {CRON_MORNING_RESCUE} script-path = https://raw.githubusercontent.com/LMuniverse/ApexApple_AE1/refs/heads/main/scripts/ccmtv/ccmtv_attendance.js, timeout = 360, tag = CCMTV压哨生命线(早班), enable = {AutoCheckin}, argument = [{LNG},{LAT},{ADDRESS},{CaptureCookie},{EnableNotify},{RandomDelay}]
+
+# 7. [Phase 2.5] 中班15分钟压哨生命线巡检 (距14:30关窗剩15分钟)
+cron {CRON_NOON_RESCUE} script-path = https://raw.githubusercontent.com/LMuniverse/ApexApple_AE1/refs/heads/main/scripts/ccmtv/ccmtv_attendance.js, timeout = 360, tag = CCMTV压哨生命线(中班), enable = {AutoCheckin}, argument = [{LNG},{LAT},{ADDRESS},{CaptureCookie},{EnableNotify},{RandomDelay}]
+
+# 8. [Phase 2.5] 晚班15分钟压哨生命线巡检 (距23:00关窗剩15分钟)
+cron {CRON_EVENING_RESCUE} script-path = https://raw.githubusercontent.com/LMuniverse/ApexApple_AE1/refs/heads/main/scripts/ccmtv/ccmtv_attendance.js, timeout = 360, tag = CCMTV压哨生命线(晚班), enable = {AutoCheckin}, argument = [{LNG},{LAT},{ADDRESS},{CaptureCookie},{EnableNotify},{RandomDelay}]
 
 [MitM]
 hostname = yun.ccmtv.cn
