@@ -128,6 +128,16 @@ const TARGET_ADDRESS = args.ADDRESS || '广东省广州市越秀区流花街道�
 const CAPTURE_COOKIE = args.CaptureCookie !== 'false' && args.CaptureCookie !== false;
 const ENABLE_NOTIFY = args.EnableNotify !== 'false' && args.EnableNotify !== false;
 const RANDOM_DELAY_MAX = Number(args.RandomDelay !== undefined && args.RandomDelay !== '' ? args.RandomDelay : 300);
+const SKIP_DATES = new Set(parseDateList(args.SkipDates || env.read('CCMTV_SKIP_DATES') || ''));
+const SERVER_NON_WORKDAY_STATUSES = new Set(['周末', '节假日', '放假', '休息', '请假']);
+const SERVER_WORKDAY_STATUSES = new Set(['正常', '旷工', '迟到', '早退']);
+
+function parseDateList(value) {
+    return String(value || '')
+        .split(/[;,\s]+/)
+        .map(item => item.trim())
+        .filter(item => /^\d{4}-\d{2}-\d{2}$/.test(item));
+}
 
 // 默认通用设备指纹模板（首次拦截手动提交后会自动持久化真实设备指纹覆盖）
 const DEFAULT_DEVICE = {
@@ -381,6 +391,36 @@ async function getYesterdayAudit(baseHeaders) {
     return "昨日全天考勤记录核验通过 ✅";
 }
 
+async function fetchServerDayPolicy(baseHeaders, dateStr) {
+    if (SKIP_DATES.has(dateStr)) {
+        return { allow: false, reason: '配置为不打卡日期' };
+    }
+
+    const monthStr = dateStr.slice(0, 7);
+    const res = await env.get({
+        url: `https://yun.ccmtv.cn/admin.php/nbzq/Sign_in_clock_home/getUserSignList/${monthStr}`,
+        headers: baseHeaders
+    });
+    const payload = JSON.parse(res.body);
+    if (payload.code !== undefined && String(payload.code) !== '0') {
+        return { allow: false, reason: `服务端月度状态异常: ${payload.msg || payload.errorMessage || payload.code}` };
+    }
+
+    const day = Array.isArray(payload.data) ? payload.data.find(item => item && item.date === dateStr) : null;
+    if (!day || !day.status) {
+        return { allow: false, reason: '服务端未返回当天考勤日状态' };
+    }
+
+    const status = String(day.status).trim();
+    if (SERVER_NON_WORKDAY_STATUSES.has(status)) {
+        return { allow: false, reason: `服务端标记为${status}` };
+    }
+    if (!SERVER_WORKDAY_STATUSES.has(status)) {
+        return { allow: false, reason: `服务端返回未知考勤日状态: ${status}` };
+    }
+    return { allow: true, status };
+}
+
 async function generateDailyAuditBoard(baseHeaders, dateStr, groupList) {
     const summary = [];
     let allDone = true;
@@ -424,6 +464,15 @@ async function executeCronAutoCheckin() {
     const currentHour = today.getHours();
     const currentMinute = today.getMinutes();
     const currentTimeVal = currentHour * 60 + currentMinute;
+    const dayOfWeek = today.getDay();
+    if (dayOfWeek === 0 || dayOfWeek === 6) {
+        console.log(`[CCMTV-Cron] 政策跳过 ${dateStr}: 周末额外排班不属于自动打卡范围`);
+        return;
+    }
+    if (SKIP_DATES.has(dateStr)) {
+        console.log(`[CCMTV-Cron] 政策跳过 ${dateStr}: 配置为不打卡日期`);
+        return;
+    }
     // 判定是否处于关窗前15分钟压哨抢救窗口 (早班 07:40~08:00, 中班 14:10~14:30, 晚班 22:40~23:00)
     const isRescueWindow = (currentTimeVal >= 460 && currentTimeVal <= 485) ||
                            (currentTimeVal >= 850 && currentTimeVal <= 875) ||
@@ -489,6 +538,18 @@ async function executeCronAutoCheckin() {
         'X-Requested-With': 'XMLHttpRequest',
         'Referer': 'https://yun.ccmtv.cn/admin.php/nbzq/Sign_in_clock_home/user_index'
     };
+
+    try {
+        const dayPolicy = await fetchServerDayPolicy(baseHeaders, dateStr);
+        if (!dayPolicy.allow) {
+            console.log(`[CCMTV-Cron] 政策跳过 ${dateStr}: ${dayPolicy.reason}`);
+            return;
+        }
+        console.log(`[CCMTV-Cron] 服务端确认 ${dateStr} 为${dayPolicy.status}考勤日`);
+    } catch (err) {
+        console.log(`[CCMTV-Cron] 服务端考勤日状态查询失败: ${err.message}，安全退出`);
+        return;
+    }
 
     // 2. 第一道防火墙：获取今日排班列表 (集成深度自愈与重试)
     let groupList = [];
