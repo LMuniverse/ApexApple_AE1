@@ -130,6 +130,7 @@ const ENABLE_NOTIFY = args.EnableNotify !== 'false' && args.EnableNotify !== fal
 const RANDOM_DELAY_MAX = Number(args.RandomDelay !== undefined && args.RandomDelay !== '' ? args.RandomDelay : 300);
 const SKIP_DATES = new Set(parseDateList(args.SkipDates || env.read('CCMTV_SKIP_DATES') || ''));
 const POLICY_AUDIT_NOTIFY = args.PolicyAuditNotify === 'true' || args.PolicyAuditNotify === true;
+const POLICY_PROBE_ONLY = args.PolicyProbeOnly === 'true' || args.PolicyProbeOnly === true;
 const SERVER_NON_WORKDAY_STATUSES = new Set(['周末', '节假日', '放假', '休息', '请假']);
 const SERVER_WORKDAY_STATUSES = new Set(['正常', '旷工', '迟到', '早退']);
 
@@ -473,7 +474,7 @@ async function executeCronAutoCheckin() {
     const currentMinute = today.getMinutes();
     const currentTimeVal = currentHour * 60 + currentMinute;
     const dayOfWeek = today.getDay();
-    if (dayOfWeek === 0 || dayOfWeek === 6) {
+    if ((dayOfWeek === 0 || dayOfWeek === 6) && !POLICY_PROBE_ONLY) {
         notifyPolicySkip(dateStr, '周末额外排班不属于自动打卡范围');
         return;
     }
@@ -554,6 +555,10 @@ async function executeCronAutoCheckin() {
             return;
         }
         console.log(`[CCMTV-Cron] 服务端确认 ${dateStr} 为${dayPolicy.status}考勤日`);
+        if (POLICY_PROBE_ONLY) {
+            notifyPolicySkip(dateStr, `只读探针完成：服务端返回${dayPolicy.status}，测试模式不提交打卡`);
+            return;
+        }
     } catch (err) {
         console.log(`[CCMTV-Cron] 服务端考勤日状态查询失败: ${err.message}，安全退出`);
         return;
