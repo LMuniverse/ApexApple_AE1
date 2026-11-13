@@ -1,0 +1,92 @@
+# DouYin / 抖音全量分流规则列表
+# 包含抖音国内主站、短视频切片 VOD、图片 CDN、直播流、火山引擎边缘节点及核心业务服务
+# 适用于 Loon、Shadowrocket、Clash 等主流客户端
+
+# === 抖音核心业务与 API ===
+DOMAIN-SUFFIX,douyin.com
+DOMAIN-SUFFIX,douyinact.com
+DOMAIN-SUFFIX,douyinact.net
+DOMAIN-SUFFIX,douyinec.com
+DOMAIN-SUFFIX,douyinfe.com
+DOMAIN-SUFFIX,douyinliving.com
+DOMAIN-SUFFIX,douyinmusicpromotion.com
+DOMAIN-SUFFIX,douyinpay.com
+DOMAIN-SUFFIX,open-douyin.com
+DOMAIN-SUFFIX,boxdouyin.com
+DOMAIN-SUFFIX,iesdouyin.com
+DOMAIN-SUFFIX,iesdouyin.net
+DOMAIN-SUFFIX,ieshuodong.cn
+DOMAIN-SUFFIX,ieshuodong.net
+
+# === 抖音音视频流 (VOD) 与核心媒体 CDN (刷视频极速秒开关键) ===
+DOMAIN-SUFFIX,douyinvod.com
+DOMAIN-SUFFIX,idouyinvod.com
+DOMAIN-SUFFIX,douyincdn.com
+DOMAIN-SUFFIX,douyinpic.com
+DOMAIN-SUFFIX,douyinstatic.com
+DOMAIN-SUFFIX,idouyinliving.com
+DOMAIN-SUFFIX,idouyinpic.com
+DOMAIN-SUFFIX,idouyinstatic.com
+
+# === 字节跳动底层媒体切片与分发 CDN ===
+DOMAIN-SUFFIX,amemv.com
+DOMAIN-SUFFIX,amemv.cn
+DOMAIN-SUFFIX,amemv.net
+DOMAIN-SUFFIX,snssdk.com
+DOMAIN-SUFFIX,toutiao.com
+DOMAIN-SUFFIX,pstatp.com
+DOMAIN-SUFFIX,zjcdn.com
+DOMAIN-SUFFIX,zjbyte.com
+DOMAIN-SUFFIX,zijiecdn.com
+DOMAIN-SUFFIX,zijiecdn.net
+DOMAIN-SUFFIX,zijieimg.com
+DOMAIN-SUFFIX,bytecdn.cn
+DOMAIN-SUFFIX,bytecdn.com
+DOMAIN-SUFFIX,bytefcdn.com
+DOMAIN-SUFFIX,byteimg.com
+DOMAIN-SUFFIX,bytescm.com
+DOMAIN-SUFFIX,bytetos.com
+DOMAIN-SUFFIX,bytedns.net
+DOMAIN-SUFFIX,bytednsdoc.com
+DOMAIN-SUFFIX,bytegecko.com
+DOMAIN-SUFFIX,bytegoofy.com
+DOMAIN-SUFFIX,zijieapi.com
+
+# === 火山引擎与边缘计算缓存节点 (Edge Cache) ===
+DOMAIN-SUFFIX,volccdn.com
+DOMAIN-SUFFIX,volces.com
+DOMAIN-SUFFIX,supercachenet.com
+DOMAIN-SUFFIX,supercachenode.com
+DOMAIN-SUFFIX,hypercachenode.com
+DOMAIN-SUFFIX,ultracachenode.com
+
+# === 头条/火山/西瓜/汽水相关融合服务 ===
+DOMAIN-SUFFIX,huoshan.com
+DOMAIN-SUFFIX,huoshancdn.com
+DOMAIN-SUFFIX,huoshangroup.com
+DOMAIN-SUFFIX,huoshanimg.com
+DOMAIN-SUFFIX,huoshanlive.com
+DOMAIN-SUFFIX,huoshanparty.com
+DOMAIN-SUFFIX,huoshanstatic.com
+DOMAIN-SUFFIX,huoshanvideo.cn
+DOMAIN-SUFFIX,huoshanvideo.net
+DOMAIN-SUFFIX,huoshanvod.com
+DOMAIN-SUFFIX,huoshanxiaoshipin.cn
+DOMAIN-SUFFIX,huoshanxiaoshipin.net
+DOMAIN-SUFFIX,huoshanzhibo.cn
+DOMAIN-SUFFIX,huoshanzhibo.com
+DOMAIN-SUFFIX,huoshanzhibo.net
+DOMAIN-SUFFIX,ixigua.com
+DOMAIN-SUFFIX,ixiguavideo.com
+DOMAIN-SUFFIX,qishui.cn
+DOMAIN-SUFFIX,qishui.com
+DOMAIN-SUFFIX,qishui.com.cn
+DOMAIN-SUFFIX,qishuimusic.cn
+DOMAIN-SUFFIX,qishuimusic.com.cn
+DOMAIN-SUFFIX,duoshan.com
+DOMAIN-SUFFIX,nextvid.net
+DOMAIN-SUFFIX,ppkankan01.com
+DOMAIN-SUFFIX,ulpay.com
+DOMAIN-SUFFIX,lifexue.com
+DOMAIN,lf3-static.bytednsdoc.com
+DOMAIN,v5-dy-o-abtest.zjcdn.com
