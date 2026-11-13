@@ -1,0 +1,20 @@
+#!name = CCMTV 考勤助手 (服务端政策测试版)
+#!desc = 周末与节假日安全策略测试版：周末额外排班不自动打卡，工作日再由服务端排班和窗口决定。仅用于测试，完成后切回正式模块。
+#!author = Nebuluxe[https://lmyz.1yo.cc]
+#!homepage = https://raw.githubusercontent.com/LMuniverse/ApexApple_AE1/refs/heads/main/module/shadowrocket/README.md
+#!icon = https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Hospital.png
+#!category = 考勤测试
+#!date = 2026-11-14 01:15:00
+
+[MITM]
+hostname = %APPEND% yun.ccmtv.cn
+
+[Script]
+# 页面注入与凭据捕获
+ccmtv-policy-inject = type=http-response,pattern=^https?:\/\/yun\.ccmtv\.cn\/admin\.php\/nbzq\/Sign_in_clock_home\/user_index,requires-body=1,max-size=0,timeout=15,script-path=https://raw.githubusercontent.com/LMuniverse/ApexApple_AE1/refs/heads/test/shadowrocket-server-policy-20261114/scripts/ccmtv/ccmtv_attendance_v1.1_policy.js,argument=LNG=113.25680&LAT=23.14200&ADDRESS=广东省广州市越秀区流花街道人民北路辅路中国人民解放军南部战区总医院(越秀院区)&CaptureCookie=true&EnableNotify=true&PolicyAuditNotify=true&RandomDelay=0
+ccmtv-policy-submit = type=http-request,pattern=^https?:\/\/yun\.ccmtv\.cn\/admin\.php\/nbzq\/Sign_in_clock_home\/,requires-body=1,max-size=0,timeout=15,script-path=https://raw.githubusercontent.com/LMuniverse/ApexApple_AE1/refs/heads/test/shadowrocket-server-policy-20261114/scripts/ccmtv/ccmtv_attendance_v1.1_policy.js,argument=LNG=113.25680&LAT=23.14200&ADDRESS=广东省广州市越秀区流花街道人民北路辅路中国人民解放军南部战区总医院(越秀院区)&CaptureCookie=true&EnableNotify=true&PolicyAuditNotify=true&RandomDelay=0
+
+# 周末测试槽位：今天在黑屏或亮屏环境均只应收到“政策跳过”，绝不能出现 userMySignPost
+ccmtv-policy-weekend-morning = type=cron,cronexp=20 7 * * 1-7,timeout=120,script-path=https://raw.githubusercontent.com/LMuniverse/ApexApple_AE1/refs/heads/test/shadowrocket-server-policy-20261114/scripts/ccmtv/ccmtv_attendance_v1.1_policy.js,argument=LNG=113.25680&LAT=23.14200&ADDRESS=广东省广州市越秀区流花街道人民北路辅路中国人民解放军南部战区总医院(越秀院区)&CaptureCookie=true&EnableNotify=true&PolicyAuditNotify=true&RandomDelay=0,wake-system=1
+ccmtv-policy-weekend-noon = type=cron,cronexp=10 12 * * 1-7,timeout=120,script-path=https://raw.githubusercontent.com/LMuniverse/ApexApple_AE1/refs/heads/test/shadowrocket-server-policy-20261114/scripts/ccmtv/ccmtv_attendance_v1.1_policy.js,argument=LNG=113.25680&LAT=23.14200&ADDRESS=广东省广州市越秀区流花街道人民北路辅路中国人民解放军南部战区总医院(越秀院区)&CaptureCookie=true&EnableNotify=true&PolicyAuditNotify=true&RandomDelay=0,wake-system=1
+ccmtv-policy-weekend-evening = type=cron,cronexp=38 17 * * 1-7,timeout=120,script-path=https://raw.githubusercontent.com/LMuniverse/ApexApple_AE1/refs/heads/test/shadowrocket-server-policy-20261114/scripts/ccmtv/ccmtv_attendance_v1.1_policy.js,argument=LNG=113.25680&LAT=23.14200&ADDRESS=广东省广州市越秀区流花街道人民北路辅路中国人民解放军南部战区总医院(越秀院区)&CaptureCookie=true&EnableNotify=true&PolicyAuditNotify=true&RandomDelay=0,wake-system=1
